@@ -1,4 +1,7 @@
 window.onload = () => {
+  const button = document.querySelector('button[data-action="change"]');
+  button.innerText = '﹖';
+
   let places = staticLoadPlaces();
   renderPlaces(places);
 };
@@ -6,35 +9,55 @@ window.onload = () => {
 function staticLoadPlaces() {
   return [
     {
-      name: 'Magnemite',
+      name: 'Pokemon',
       location: {
         lat: 35.63393145121188,
         lng: 139.70815081983574,
       }
-    },
-    {
-      name: 'Magnemite',
-      location: {
-        lat: 35.6339314512119,
-        lng: 139.708150819836,
-      }
-    },
-    {
-      name: 'Magnemite',
-      location: {
-        lat: 35.6339314520,
-        lng: 139.708150819836,
-      }
-    },
-    {
-      name: 'Magnemite',
-      location: {
-        lat: 35.63393145121189,
-        lng: 139.70815081983575,
-      }
-    },
+    }
   ];
 }
+
+let models = [
+  {
+    url: './assets/magnemite/scene.gltf',
+    scale: '0.5 0.5 0.5',
+    info: 'Magnemite, Lv. 5, HP 10/10',
+    rotation: '0 180 0',
+  },
+  {
+    url: './assets/articuno/scene.gltf',
+    scale: '0.2 0.2 0.2',
+    rotation: '0 180 0',
+    info: 'Articuno, Lv. 80, HP 100/100',
+  },
+  {
+    url: './assets/dragonite/scene.gltf',
+    scale: '0.08 0.08 0.08',
+    rotation: '0 180 0',
+    info: 'Dragonite, Lv. 99, HP 150/150',
+  },
+];
+
+let modelIndex = 0;
+let setModel = function (model, entity) {
+  if (model.scale) {
+    entity.setAttribute('scale', model.scale);
+  }
+
+  if (model.rotation) {
+    entity.setAttribute('rotation', model.rotation);
+  }
+
+  if (model.position) {
+    entity.setAttribute('position', model.position);
+  }
+
+  entity.setAttribute('gltf-model', model.url);
+
+  const div = document.querySelector('.instructions');
+  div.innerText = model.info;
+};
 
 function renderPlaces(places) {
   let scene = document.querySelector('a-scene');
@@ -45,13 +68,16 @@ function renderPlaces(places) {
 
     let model = document.createElement('a-entity');
     model.setAttribute('gps-entity-place', `latitude: ${latitude}; longitude: ${longitude};`);
-    model.setAttribute('gltf-model', './assets/magnemite/scene.gltf');
-    model.setAttribute('rotation', '0 180 0');
-    model.setAttribute('animation-mixer', '');
-    model.setAttribute('scale', '0.5 0.5 0.5');
 
-    model.addEventListener('loaded', () => {
-      window.dispatchEvent(new CustomEvent('gps-entity-place-loaded'))
+    setModel(models[modelIndex], model);
+
+    model.setAttribute('animation-mixer', '');
+
+    document.querySelector('button[data-action="change"]').addEventListener('click', function () {
+      var entity = document.querySelector('[gps-entity-place]');
+      modelIndex++;
+      var newIndex = modelIndex % models.length;
+      setModel(models[newIndex], entity);
     });
 
     scene.appendChild(model);
