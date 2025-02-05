@@ -4,18 +4,22 @@ window.onload = () => {
 
   let places = staticLoadPlaces();
   renderPlaces(places);
+
 };
 
 function staticLoadPlaces() {
-  return [
-    {
-      name: 'Pokemon',
-      location: {
-        lat: 35.63393145121188,
-        lng: 139.70815081983574,
+  navigator.geolocation.getCurrentPosition((position) => {
+    return [
+      {
+        name: 'Pokemon',
+        location: {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        }
       }
-    }
-  ];
+    ];
+  });
+
 }
 
 let models = [
